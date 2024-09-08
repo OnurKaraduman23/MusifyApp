@@ -1,4 +1,4 @@
-package com.onurkaraduman.musifyapp.ui.theme
+package com.onurkaraduman.musifyapp.design_system.theme
 
 import android.app.Activity
 import android.os.Build
