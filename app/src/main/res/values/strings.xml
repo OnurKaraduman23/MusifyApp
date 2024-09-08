@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MusifyApp</string>
+    <string name="discover_new_music">Discover New Music</string>
+    <string name="genres">Genres</string>
+    <string name="browse">Browse</string>
+    <string name="explore">Explore</string>
+    <string name="popular_songs">Popular Songs</string>
+    <string name="more">More</string>
 </resources>
