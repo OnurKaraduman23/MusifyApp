@@ -10,6 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,6 +24,7 @@ import com.onurkaraduman.musifyapp.presentation.musify_navigator.components.Musi
 import com.onurkaraduman.musifyapp.presentation.navgraph.Route
 import com.onurkaraduman.musifyapp.presentation.profile.ProfileScreen
 import com.onurkaraduman.musifyapp.presentation.search.SearchScreen
+import com.onurkaraduman.musifyapp.presentation.search.SearchViewModel
 
 @Composable
 fun MusifyNavigator() {
@@ -92,7 +95,9 @@ fun MusifyNavigator() {
             }
 
             composable(route = Route.SearchScreen.route) {
-                SearchScreen()
+                val searchViewModel: SearchViewModel = hiltViewModel()
+                val state = searchViewModel.state.value
+                SearchScreen(state= state, event = searchViewModel::onEvent, navigateToMusicPlayer = {})
             }
 
             composable(route = Route.ProfileScreen.route) {
