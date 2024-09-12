@@ -1,6 +1,6 @@
 package com.onurkaraduman.musifyapp.presentation.home
 
-import android.util.Log
+import MusicState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -24,94 +25,135 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.onurkaraduman.musifyapp.R
 import com.onurkaraduman.musifyapp.design_system.components.MusicCard
-import com.onurkaraduman.musifyapp.design_system.theme.MusifyAppTheme
+import com.onurkaraduman.musifyapp.design_system.components.PlayMusicCard
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-
     val musicState = viewModel.state.value
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(colorResource(id = R.color.black)),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Spacer(modifier = Modifier.height(30.dp))
 
-        HeaderAndButtonSection(
-            header = stringResource(id = R.string.discover_new_music),
-            buttonText = stringResource(id = R.string.browse)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        DiscoverMusicSection(musicState.discoverMusicState)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
-            items(musicState.discoverMusicsState.musics) { discoverMusic ->
-                MusicCard(text = discoverMusic.title, imageUrl = discoverMusic.pictureSmall)
-            }
+        GenresMusicSection(musicState.genresState)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PopularMusicSection(musicState.popularMusicState)
+    }
+}
+
+@Composable
+fun DiscoverMusicSection(state: MusicState.Discover) {
+    HeaderAndButtonSection(
+        header = stringResource(id = R.string.discover_new_music),
+        buttonText = stringResource(id = R.string.browse)
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
+    when {
+        state.state.isLoading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
-        if (musicState.discoverMusicsState.error.isNotBlank()) {
+        state.state.error.isNotBlank() -> {
             Text(
-                text = musicState.discoverMusicsState.error,
+                text = state.state.error,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-
             )
-            Log.e("Dante", musicState.discoverMusicsState.error)
         }
-        if (musicState.discoverMusicsState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        HeaderAndButtonSection(
-            header = stringResource(id = R.string.genres),
-            buttonText = stringResource(id = R.string.explore)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
-            items(musicState.genresMusicsState.musics) { discoverMusic ->
-                MusicCard(text = discoverMusic.name, imageUrl = discoverMusic.pictureSmall)
+        else -> {
+            LazyRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
+                items(state.state.data) { discoverMusic ->
+                    MusicCard(title = discoverMusic.title, imageUrl = discoverMusic.pictureSmall)
+                }
             }
         }
-        if (musicState.genresMusicsState.error.isNotBlank()) {
+    }
+}
+
+@Composable
+fun GenresMusicSection(state: MusicState.Genres) {
+    HeaderAndButtonSection(
+        header = stringResource(id = R.string.genres),
+        buttonText = stringResource(id = R.string.explore)
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
+    when {
+        state.state.isLoading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        }
+        state.state.error.isNotBlank() -> {
             Text(
-                text = musicState.genresMusicsState.error,
+                text = state.state.error,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-
             )
-            Log.e("Dante", musicState.discoverMusicsState.error)
         }
-        if (musicState.genresMusicsState.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-
+        else -> {
+            LazyRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
+                items(state.state.data) { genre ->
+                    MusicCard(title = genre.name, imageUrl = genre.pictureSmall)
+                }
+            }
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+@Composable
+fun PopularMusicSection(state: MusicState.Popular) {
+    HeaderAndButtonSection(
+        header = stringResource(id = R.string.popular_songs),
+        buttonText = stringResource(id = R.string.more)
+    )
 
-        HeaderAndButtonSection(
-            header = stringResource(id = R.string.popular_songs),
-            buttonText = stringResource(id = R.string.more)
-        )
-
-
+    when {
+        state.state.isLoading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        }
+        state.state.error.isNotBlank() -> {
+            Text(
+                text = state.state.error,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            )
+        }
+        else -> {
+            LazyColumn(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
+                items(state.state.data) { popularMusic ->
+                    PlayMusicCard(
+                        title = popularMusic.title,
+                        name = popularMusic.artistName,
+                        imageUrl = popularMusic.pictureSmall,
+                        onClickCard = {},
+                        onClickPlayButton = {}
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -122,7 +164,8 @@ fun HeaderAndButtonSection(
     buttonText: String
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .padding(start = 24.dp, end = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -142,14 +185,5 @@ fun HeaderAndButtonSection(
         ) {
             Text(text = buttonText)
         }
-    }
-
-}
-
-@Preview
-@Composable
-fun PreviewHomeScreen() {
-    MusifyAppTheme {
-        HomeScreen()
     }
 }
