@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun MusicCard(text: String, imageUrl: String) {
+fun MusicCard(title: String, imageUrl: String) {
     Card(
         modifier = Modifier
             .size(100.dp)
@@ -48,7 +48,7 @@ fun MusicCard(text: String, imageUrl: String) {
                     .align(Alignment.Center)
             ) {
                 Text(
-                    text = text,
+                    text = title,
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -65,15 +65,15 @@ fun MusicCardRowPreview() {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         MusicCard(
-            text = "Hit parçalar",
+            title = "Hit parçalar",
             imageUrl = "https://e-cdns-images.dzcdn.net/images/misc/8b9faa4bff0892283000a53b0d85eb73/56x56-000000-80-0-0.jpg"
         )
         MusicCard(
-            text = "Indie",
+            title = "Indie",
             imageUrl = "https://e-cdns-images.dzcdn.net/images/misc/235ec47f2b21c3c73e02fce66f56ccc5/56x56-000000-80-0-0.jpg"
         )
         MusicCard(
-            text = "TNTF",
+            title = "TNTF",
             imageUrl = "https://e-cdns-images.dzcdn.net/images/misc/5dfdae5fdb147623ed11a2513074a970/56x56-000000-80-0-0.jpg"
         )
     }
